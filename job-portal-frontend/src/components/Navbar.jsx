@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Notifications as NotificationsIcon, ExitToApp as ExitToAppIcon, Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
+import {
+  Notifications as NotificationsIcon,
+  ExitToApp as ExitToAppIcon,
+  Menu as MenuIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
 import { Badge } from "@mui/material";
 
 const Navbar = () => {
@@ -9,7 +14,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleMenuToggle = () => setMenuOpen(!menuOpen);
-  const handleNotificationsToggle = () => setNotificationsOpen(!notificationsOpen);
+  const handleNotificationsToggle = () =>
+    setNotificationsOpen(!notificationsOpen);
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -38,9 +44,24 @@ const Navbar = () => {
 
       {/* Desktop Navigation Links */}
       <nav className="hidden md:flex items-center gap-6">
-        <Link to="/job/get-jobs" className="hover:underline">
+        {localStorage.getItem("token") ? (
+          <Link to="/"
+          className={`hover:underline ${location.pathname === "/" ? "text-blue-600 font-bold" : ""}`}>
+            Home
+          </Link>
+        ) : (
+          <></>
+        )}
+        {/* <Link to="/job/get-jobs" className="hover:underline">
           Find Jobs
-        </Link>
+        </Link> */}
+        <Link
+  to="/job/get-jobs"
+  className={`hover:underline ${location.pathname === "/job/get-jobs" ? "text-blue-600 font-bold" : ""}`}
+>
+  Find Jobs
+</Link>
+
         <Link to="#" className="hover:underline">
           For Recruiters
         </Link>
@@ -123,7 +144,18 @@ const Navbar = () => {
       {/* Mobile Menu Content */}
       {menuOpen && (
         <div className="absolute top-16 left-0 w-full bg-white z-10 md:hidden flex flex-col items-center shadow-lg py-4">
-          <Link to="/job/get-jobs" className="py-2 text-gray-700 hover:underline">
+          {localStorage.getItem("token") ? (
+            <Link to="/" className="py-2 text-gray-700 hover:underline">
+              Home
+            </Link>
+          ) : (
+            <></>
+          )}
+
+          <Link
+            to="/job/get-jobs"
+            className="py-2 text-gray-700 hover:underline"
+          >
             Find Jobs
           </Link>
           <Link to="#" className="py-2 text-gray-700 hover:underline">
@@ -138,7 +170,10 @@ const Navbar = () => {
 
           {localStorage.getItem("token") ? (
             <>
-              <Link to="/profile" className="py-2 text-gray-700 hover:underline">
+              <Link
+                to="/profile"
+                className="py-2 text-gray-700 hover:underline"
+              >
                 Your Profile
               </Link>
               <button

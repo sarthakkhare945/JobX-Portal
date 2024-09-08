@@ -37,6 +37,7 @@ const Jobs = () => {
      
       const job = await fetchJobs();
     console.log("jobs from default.jsx", job);
+    
     setjobs(job);
     };
     getJobs();

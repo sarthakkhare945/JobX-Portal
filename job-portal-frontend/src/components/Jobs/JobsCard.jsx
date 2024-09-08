@@ -24,7 +24,8 @@ const JobsList = ({jobs}) => {
   return (
     <div className="w-[80%] mx-auto">
       <h3 className="flex justify-start ml-2 font-bold text-lg md:text-xl py-8 text-[#000000]">
-        3979 Jobs Found
+        {jobs.length} Jobs Found
+        {console.log('jobs length--->',jobs)}
       </h3>
 
       <div className="flex flex-col justify-center place-items-center mb-8">
