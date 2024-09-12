@@ -43,7 +43,7 @@ export const fetchJobs = async (queryParams) => {
         const queryString = new URLSearchParams(queryParams).toString();
         url += `?${queryString}`;
       }
-      console.log("Request URL:", url);
+      console.log("Request URL---->:", url);
       // Make the API request with or without query string
       const response = await axios.get(url);
       console.log("Response from fetchJobsasdasd:", response.data);

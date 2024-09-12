@@ -22,7 +22,7 @@ const Jobs = () => {
       workType: selection.workType,
       workMode: selection.location,
       experience: selection.experience,
-      hiringPosition: selection.hiringPosition,
+      position: selection.hiringPosition,
     }).toString();
 
     console.log("query params---------->", queryParams);
