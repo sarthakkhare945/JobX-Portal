@@ -16,7 +16,7 @@ const MainContent = () => {
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/jobs/list" element={<RecruiterJobs />} />
       <Route path="/jobs-create" element={<Create />} />
-      <Route path="/edit-job" element={<Edit />} />
+      <Route path="/edit-job/:id" element={<Edit />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/job-role" element={<JobRole />} />
 

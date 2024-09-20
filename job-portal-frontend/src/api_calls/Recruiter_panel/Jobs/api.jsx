@@ -12,3 +12,20 @@ export const getAllJobs = async () => {
     throw new Error("Failed to fetch jobs");
   }
 };
+
+
+
+export const getParticularRecruiter = async (id,token) => {
+  try {
+    const response = await axios.get(`${server}/api/user/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log('particular recruiter response--->',response.data)
+    return response.data; // Adjust this based on the actual structure of your API response
+  } catch (error) {
+    throw new Error("Failed to fetch jobs");
+  }
+};
+

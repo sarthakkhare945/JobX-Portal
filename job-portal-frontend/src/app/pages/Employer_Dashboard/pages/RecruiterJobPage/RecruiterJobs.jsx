@@ -3,63 +3,36 @@ import { useNavigate } from "react-router-dom";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { getAllJobs } from "../../../../../api_calls/Recruiter_panel/Jobs/api";
+import { getAllJobs, getParticularRecruiter } from "../../../../../api_calls/Recruiter_panel/Jobs/api";
 
 export default function JobList() {
-  const [jobs, setJobs] = useState([
-    // {
-    //   id: 1,
-    //   company: "Acme Inc.",
-    //   position: "Software Engineer",
-    //   location: "San Francisco, CA",
-    //   jobUrl: "https://acme.com/careers/software-engineer",
-    //   description: "We are looking for an experienced software engineer to join our team.",
-    //   workMode: "remote",
-    //   skills: ["JavaScript", "React", "Node.js"],
-    //   salaryRange: "80k - 120k",
-    //   experienceLevel: "Mid-Level",
-    //   workType: "Full-Time",
-    // },
-    // {
-    //   id: 2,
-    //   company: "Globex Corp",
-    //   position: "UI/UX Designer",
-    //   location: "New York, NY",
-    //   jobUrl: "https://globex.com/careers/ui-ux-designer",
-    //   description: "Seeking a talented UI/UX designer to create visually stunning and user-friendly interfaces.",
-    //   workMode: "hybrid",
-    //   skills: ["Figma", "Adobe Creative Suite", "User Research"],
-    //   salaryRange: "60k - 90k",
-    //   experienceLevel: "Senior",
-    //   workType: "Full-Time",
-    // },
-    // {
-    //   id: 3,
-    //   company: "Stark Industries",
-    //   position: "Data Analyst",
-    //   location: "Remote",
-    //   jobUrl: "https://stark.com/careers/data-analyst",
-    //   description: "Analyze complex data sets and provide insights to drive business decisions.",
-    //   workMode: "remote",
-    //   skills: ["SQL", "Python", "Power BI"],
-    //   salaryRange: "50k - 80k",
-    //   experienceLevel: "Entry-Level",
-    //   workType: "Part-Time",
-    // },
-  ]);
+  const [jobs, setJobs] = useState([]);
+  const [RecruiterId,setRecruiterId] = useState()
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
-    const getJobs = async() => {
-     
+    const getJobs = async () => {
       const job = await getAllJobs();
-    console.log("jobs from recruiter calling.jsx", job);
-    
-    setJobs(job);
+      console.log("jobs from recruiter jobs.jsx", job);
+
+      setJobs(job);
+      setRecruiterId(job?.createdBy)
     };
     getJobs();
+  }, []);
+
+
+  useEffect(() => {
+    const getParticularUser = async () => {
+      const token = localStorage.getItem('token')
+      const job = await getParticularRecruiter(RecruiterId,token);
+      console.log("particular user details from recruiterjobs.jsx", job);
+
+      // setJobs(job);
+      setRecruiterId(job?.createdBy)
+    };
+    getParticularUser();
   }, []);
 
   return (
@@ -83,7 +56,9 @@ export default function JobList() {
                 <th className="px-6 py-4 font-semibold text-left">Location</th>
                 <th className="px-6 py-4 font-semibold text-left">Work Type</th>
                 <th className="px-6 py-4 font-semibold text-left">Work Mode</th>
-                <th className="px-6 py-4 font-semibold text-left">Uploaded By</th>
+                <th className="px-6 py-4 font-semibold text-left">
+                  Uploaded By
+                </th>
                 <th className="px-6 py-4 font-semibold text-left">Actions</th>
               </tr>
             </thead>
@@ -95,12 +70,24 @@ export default function JobList() {
                     idx % 2 === 0 ? "bg-gray-50" : "bg-white"
                   }`}
                 >
-                  <td className="px-6 py-4 text-gray-700 capitalize">{job.company}</td>
-                  <td className="px-6 py-4 text-gray-700 capitalize">{job.position}</td>
-                  <td className="px-6 py-4 text-gray-700 capitalize">{job.workLocation}</td>
-                  <td className="px-6 py-4 text-gray-700 capitalize">{job.workType}</td>
-                  <td className="px-6 py-4 text-gray-700 capitalize">{job.workMode}</td>
-                  <td className="px-6 py-4 text-gray-700 capitalize">{job.createdBy?.name}</td>
+                  <td className="px-6 py-4 text-gray-700 capitalize">
+                    {job.company}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 capitalize">
+                    {job.position}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 capitalize">
+                    {job.workLocation}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 capitalize">
+                    {job.workType}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 capitalize">
+                    {job.workMode}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 capitalize">
+                    {job.createdBy?.name}
+                  </td>
                   <td className="px-6 py-4 flex gap-4">
                     <IconButton
                       onClick={() => navigate(`/edit-job`)}
@@ -110,7 +97,9 @@ export default function JobList() {
                       <EditIcon />
                     </IconButton>
                     <IconButton
-                      onClick={() => setJobs(jobs.filter((j) => j.id !== job.id))}
+                      onClick={() =>
+                        setJobs(jobs.filter((j) => j.id !== job.id))
+                      }
                       aria-label="delete"
                       className="text-red-600 hover:text-red-800 transition"
                     >

@@ -291,7 +291,8 @@ export const getAllJobs = async (req, res, next) => {
     const numOfPage = Math.ceil(totalJobs / limit);
 
     // Fetch the filtered, sorted, and paginated jobs
-    const jobs = await queryResult;
+    // const jobs = await queryResult;
+    const jobs = await queryResult.find().populate("createdBy", "name");
 
     // Format the createdAt field
     const formattedJobs = jobs.map((job) => {

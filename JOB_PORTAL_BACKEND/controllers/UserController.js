@@ -54,3 +54,33 @@ export const getUserDetailsController = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+export const getAllRecruitersController = async(req,res,next) =>{
+  try {
+    const allusers = await User.find({})
+    res.status(200).json({
+      message: 'Users fetched Successfully',
+      users: allusers
+    })
+  } catch (error) {
+    
+  }
+}
+
+
+
+
+export const getAllParticularRecruitersController = async(req,res,next) =>{
+  try {
+    const {id} = req.params;
+    const user = await User.findById(id)
+    res.status(200).json({
+      message: 'Users fetched Successfully',
+      users: user
+    })
+  } catch (error) {
+    
+  }
+}
