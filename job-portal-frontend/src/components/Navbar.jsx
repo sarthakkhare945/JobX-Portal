@@ -18,6 +18,7 @@ const Navbar = () => {
     setNotificationsOpen(!notificationsOpen);
   const handleLogout = () => {
     localStorage.removeItem("token");
+    // localStorage.removeItem('role')
     navigate("/login");
     window.location.reload();
   };

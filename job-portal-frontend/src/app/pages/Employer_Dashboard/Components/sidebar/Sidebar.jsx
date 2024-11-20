@@ -6,9 +6,9 @@ import LayersOutlined from "@mui/icons-material/LayersOutlined";
 
 const Sidebar = () => {
   return (
-    <Box className="flex flex-col gap-4 bg-gray-900 min-h-screen w-64 p-4 text-white shadow-lg fixed">
+    <Box className="h-full mt-20">
       {/* Sidebar Navigation */}
-      <Box className="flex-1 mt-4">
+      <Box className="mt-4">
         <nav className="flex flex-col space-y-2">
           <Link
             to="/"
@@ -26,7 +26,6 @@ const Sidebar = () => {
             <span className="text-md font-medium">Jobs</span>
           </Link>
 
-
           <Link
             to="/job-role"
             className="flex items-center gap-3 p-3 rounded-md text-gray-300 transition-all hover:bg-gray-800 hover:text-white"
@@ -35,9 +34,6 @@ const Sidebar = () => {
             <span className="text-md font-medium">Job Role</span>
           </Link>
 
-
-          
-
           <Link
             to="/settings"
             className="flex items-center gap-3 p-3 rounded-md text-gray-300 transition-all hover:bg-gray-800 hover:text-white"
@@ -45,8 +41,6 @@ const Sidebar = () => {
             <Setting className="h-5 w-5 text-green-400" />
             <span className="text-md font-medium">Settings</span>
           </Link>
-
-
         </nav>
       </Box>
     </Box>

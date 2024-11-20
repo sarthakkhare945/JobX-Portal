@@ -65,7 +65,7 @@ app.use('/swagger-ui', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/v1/test", testroutes);
+// app.use("/api/v1/test", testroutes);
 app.use("/api/user", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/job", jobsRoute);

@@ -64,12 +64,14 @@ export const loginController = async (req, res, next) => {
 
     const token = user.createJWT();
     const role  = user.role
+    console.log('role m cekc-->',role)
     res.status(200).json({
       success: true,
       message: "Login successfully",
       token,
       role
     });
+    
   } catch (error) {
     console.error(error);
     next(error);

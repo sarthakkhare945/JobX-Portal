@@ -10,12 +10,13 @@ export const CreateJobController = async (req, res, next) => {
       company,
       workLocation,
       jobUrl,
-      description,
+      // description,
       workMode,
       skills,
       salary,
       JobdescriptionSummary,
       position,
+      miniMumQualification
     } = req.body;
 
     // Debugging log: Print request body
@@ -25,15 +26,16 @@ export const CreateJobController = async (req, res, next) => {
       !company ||
       !workLocation ||
       !jobUrl ||
-      !description ||
+      // !description ||
       !workMode ||
       !skills ||
       !salary ||
-      !JobdescriptionSummary
+      !JobdescriptionSummary ||
+      !miniMumQualification
     ) {
       return res.status(400).json({
         success: false,
-        error: "Please Provide All Required Fields",
+        error: "Please Provide All Required Fieldsnnn",
       });
     }
 
@@ -96,130 +98,17 @@ export const CreateJobController = async (req, res, next) => {
   }
 };
 
-// export const getAllJobs = async (req, res, next) => {
-//   try {
-//     const { workType, search, sort, workMode, experience, hiringPosition } =
-//       req.query;
-
-//     // Base query object with creator filter
-//     const queryObject = {};
-
-//     // Filters
-//     if (workType && workType !== "all") {
-//       queryObject.workType = workType;
-//     }
-
-//     if (workMode && workMode !== "all") {
-//       queryObject.workMode = workMode;
-//     }
-
-//     if (experience && experience !== "all") {
-//       queryObject.experience = experience;
-//     }
-
-//     if (search) {
-//       queryObject.position = { $regex: search, $options: "i" };
-//     }
-
-//     // Fetch hiringPosition values from CustomFields if needed
-//     let hiringPositions = [];
-//     if (hiringPosition && hiringPosition !== "all") {
-//       // Fetch CustomFields where hiringPosition matches the query
-//       const customFields = await customfields
-//         .find({
-//           hiringPosition: { $regex: new RegExp(`^${hiringPosition}$`, "i") },
-//         })
-//         .exec();
-
-//       // Extract hiringPositions from the results
-//       hiringPositions = customFields.map((field) => field.hiringPosition);
-
-//       if (hiringPositions.length > 0) {
-//         // Adjust the filter to include any of the hiringPositions
-//         queryObject.position = { $in: hiringPositions };
-//       } else {
-//         // If no hiringPositions matched, set to an impossible value or handle as needed
-//         queryObject.position = ""; // This avoids returning results by mistake
-//       }
-//     }
-
-//     // Debugging log: Print the queryObject
-//     console.log("Query Object:", queryObject);
-
-//     // Initial query with filters
-//     let queryResult = Jobs.find(queryObject);
-
-//     // Sorting
-//     if (sort === "latest") {
-//       queryResult = queryResult.sort("-createdAt");
-//     } else if (sort === "oldest") {
-//       queryResult = queryResult.sort("createdAt");
-//     } else if (sort === "a-z") {
-//       queryResult = queryResult.sort("position");
-//     } else if (sort === "z-a") {
-//       queryResult = queryResult.sort("-position");
-//     }
-
-//     // Pagination
-//     const page = Number(req.query.page) || 1;
-//     const limit = Number(req.query.limit) || 10;
-//     const skip = (page - 1) * limit;
-//     queryResult = queryResult.skip(skip).limit(limit);
-
-//     // Jobs count
-//     const totalJobs = await Jobs.countDocuments(queryObject);
-//     const numOfPage = Math.ceil(totalJobs / limit);
-
-//     // Fetch the filtered, sorted, and paginated jobs
-//     const jobs = await queryResult;
-
-//     // Format the createdAt field
-//     const formattedJobs = jobs.map((job) => {
-//       const createdAt = job.createdAt;
-//       let formattedDate;
-
-//       if (typeof createdAt === "string") {
-//         try {
-//           formattedDate = formatDistanceToNow(parseISO(createdAt), {
-//             addSuffix: true,
-//           });
-//         } catch (error) {
-//           formattedDate = "Invalid Date";
-//         }
-//       } else if (createdAt instanceof Date) {
-//         formattedDate = formatDistanceToNow(createdAt, { addSuffix: true });
-//       } else {
-//         formattedDate = "Invalid Date";
-//       }
-
-//       return {
-//         ...job.toObject(),
-//         createdAt: formattedDate, // Add the formatted date to the response
-//       };
-//     });
-
-//     const JobCreated = await Jobs.find().populate("createdBy", "name");
-//     console.log("job created person name---?", JobCreated);
-
-//     res.status(200).json({
-//       totalJobs,
-//       // jobs: formattedJobs,
-//       jobs: JobCreated,
-//       numOfPage,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching Jobs", error);
-//     res.status(400).json({
-//       message: "Error Fetching Jobs",
-//     });
-//   }
-// };
-
-
-
 export const getAllJobs = async (req, res, next) => {
   try {
-    const { workType, search, sort, workMode, experience, hiringPosition,position } = req.query;
+    const {
+      workType,
+      search,
+      sort,
+      workMode,
+      experience,
+      hiringPosition,
+      position,
+    } = req.query;
 
     // Base query object with creator filter
     const queryObject = {};
@@ -237,7 +126,7 @@ export const getAllJobs = async (req, res, next) => {
       queryObject.experience = { $regex: new RegExp(`^${experience}$`, "i") };
     }
 
-    if(position && position !== "all"){
+    if (position && position !== "all") {
       queryObject.position = { $regex: new RegExp(`^${position}$`, "i") };
     }
 
@@ -249,10 +138,14 @@ export const getAllJobs = async (req, res, next) => {
     let hiringPositions = [];
     if (hiringPosition && hiringPosition !== "all") {
       // Fetch CustomFields where hiringPosition matches the query
-      const customFields = await customfields.find({ hiringPosition: { $regex: new RegExp(`^${hiringPosition}$`, 'i') } }).exec();
+      const customFields = await customfields
+        .find({
+          hiringPosition: { $regex: new RegExp(`^${hiringPosition}$`, "i") },
+        })
+        .exec();
 
       // Extract hiringPositions from the results
-      hiringPositions = customFields.map(field => field.hiringPosition);
+      hiringPositions = customFields.map((field) => field.hiringPosition);
 
       if (hiringPositions.length > 0) {
         // Adjust the filter to include any of the hiringPositions
@@ -264,7 +157,7 @@ export const getAllJobs = async (req, res, next) => {
     }
 
     // Debugging log: Print the queryObject
-    console.log('Query Object:', queryObject);
+    console.log("Query Object:", queryObject);
 
     // Initial query with filters
     let queryResult = Jobs.find(queryObject);
@@ -281,14 +174,14 @@ export const getAllJobs = async (req, res, next) => {
     }
 
     // Pagination
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    queryResult = queryResult.skip(skip).limit(limit);
+    // const page = Number(req.query.page) || 1;
+    // const limit = Number(req.query.limit) || 10;
+    // const skip = (page - 1) * limit;
+    // queryResult = queryResult.skip(skip).limit(limit);
 
     // Jobs count
     const totalJobs = await Jobs.countDocuments(queryObject);
-    const numOfPage = Math.ceil(totalJobs / limit);
+    // const numOfPage = Math.ceil(totalJobs / limit);
 
     // Fetch the filtered, sorted, and paginated jobs
     // const jobs = await queryResult;
@@ -322,7 +215,7 @@ export const getAllJobs = async (req, res, next) => {
     res.status(200).json({
       totalJobs,
       jobs: formattedJobs,
-      numOfPage,
+      // numOfPage,
     });
   } catch (error) {
     console.error("Error fetching Jobs", error);
@@ -331,9 +224,6 @@ export const getAllJobs = async (req, res, next) => {
     });
   }
 };
-
-
-
 
 export const getParticularJob = async (req, res) => {
   try {
@@ -413,10 +303,12 @@ export const updateJobs = async (req, res, next) => {
       next(`No jobs found with this id ${id}`);
     }
     // Verifying the logged-in user is the one who created the job
+    console.log('req user id check--->',req?.User?._id?.toString())
+    console.log('jobcrewaed by check--->',job?.createdBy.toString())
     if (req.User?._id.toString() !== job.createdBy.toString()) {
       return res.status(403).json({
         success: false,
-        message: "You do not have permission to delete this job",
+        message: "You do not have permission to update this job",
       });
     } else {
       const updateJob = await Jobs.findOneAndUpdate({ _id: id }, req.body, {

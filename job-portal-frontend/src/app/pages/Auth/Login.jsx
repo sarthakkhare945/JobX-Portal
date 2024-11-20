@@ -31,6 +31,7 @@ const Login = () => {
       console.log("Form values to be submitted:", submissionData);
       const res = await login(submissionData);
       console.log('res kya aara --->',res)
+      // localStorage.setItem('role',res.role)
       toast.success("Loggedin Successfully");
       localStorage.setItem('token',res.token)
       setFormValues({

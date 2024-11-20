@@ -11,10 +11,10 @@ const JobSchema = new mongoose.Schema(
       required: [true, "Position is required"],
       maxlength: 100,
     },
-    description: {
-      type: [String],
-      required: [true, "Description is required"],
-    },
+    // description: {
+    //   type: [String],
+    //   required: [true, "Description is required"],
+    // },
 
     JobdescriptionSummary: {
       type: String,
@@ -26,6 +26,10 @@ const JobSchema = new mongoose.Schema(
       default: "fresher",
     },
     skills: {
+      type: [String],
+    },
+
+    miniMumQualification: {
       type: [String],
     },
     education: {
