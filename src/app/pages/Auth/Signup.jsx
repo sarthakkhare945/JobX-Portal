@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import SignupImg from "../../../assets/Signup.png";
 import { Link } from "react-router-dom";
 import { register } from "../../../api_calls/Auth/Auth";
-import { toast,Toaster } from 'react-hot-toast';
-
+import { toast, Toaster } from "react-hot-toast";
 
 const Signup = () => {
   const [formValues, setFormValues] = useState({
@@ -14,6 +13,7 @@ const Signup = () => {
   });
 
   const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,12 +31,25 @@ const Signup = () => {
         setPasswordError("");
       }
     }
+    if (name === "email") {
+      // Check for Gmail address
+      if (!value.endsWith("@gmail.com")) {
+        setEmailError("Please use a valid Gmail address");
+      } else {
+        setEmailError(""); // Clear the error if valid
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password, confirmPassword, name } = formValues;
 
+    // Reset previous error messages
+    setPasswordError("");
+    setEmailError("");
+
+    // Validate password
     if (password.length < 8) {
       setPasswordError("Password must be at least 8 characters");
     } else if (password !== confirmPassword) {
@@ -45,14 +58,18 @@ const Signup = () => {
       const { confirmPassword, ...submissionData } = formValues; // Exclude confirmPassword
       console.log("Form values to be submitted:", submissionData);
       const res = await register(submissionData);
-      console.log("User registered successfully");
-      toast.success('Registered Successfully')
-      setFormValues({
-        email: "",
-        password: "",
-        confirmPassword: "",
-        name: "",
-      });
+      console.log("response-->", res);
+      if (res.success === false) {
+        toast.error(res.message);
+      } else {
+        toast.success("User Registered Successfully");
+        setFormValues({
+          email: "",
+          password: "",
+          confirmPassword: "",
+          name: "",
+        });
+      }
     }
   };
 
@@ -108,6 +125,14 @@ const Signup = () => {
 
             <div className="flex flex-col pt-4">
               <div className="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
+                {/* <input
+                  type="email"
+                  name="email"
+                  className="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
+                  placeholder="Email"
+                  value={formValues.email}
+                  onChange={handleChange}
+                /> */}
                 <input
                   type="email"
                   name="email"
@@ -117,6 +142,9 @@ const Signup = () => {
                   onChange={handleChange}
                 />
               </div>
+                {emailError && (
+                  <p className="text-red-500 text-sm mt-2">{emailError}</p>
+                )}
             </div>
             <div className="mb-4 flex flex-col pt-4">
               <div className="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-blue-600">
@@ -168,10 +196,7 @@ const Signup = () => {
           </form>
         </div>
       </div>
-      <Toaster
-  position="top-center"
-  reverseOrder={false}
-/>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };
