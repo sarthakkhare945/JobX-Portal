@@ -35,7 +35,7 @@ const Header = () => {
             <img
               src={landingimagebg}
               alt="Landing"
-              className="w-full h-[80vh] max-w-full object-contain rounded-md md:mt-[100px]"
+              className="w-full h-[77vh] max-w-full object-contain rounded-md md:mt-[100px]"
             />
           </motion.div>
         </div>

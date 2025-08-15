@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, Button } from "@mui/material";
+import { Card, CardContent, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Briefcase, Calendar } from "iconsax-react";
 import { motion } from "framer-motion";
 import { fetchFilteredJobs } from "../../api_calls/Jobs/api";
+import Loader from "../Loader/Loader"; // Spinner component you created
 
 const FeaturedJobs = () => {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getJobs = async () => {
-      const jobsData = await fetchFilteredJobs();
-      console.log("jobs data---->", jobsData);
-      setJobs(jobsData);
+      setLoading(true);
+      try {
+        const jobsData = await fetchFilteredJobs();
+        console.log("jobs data ---->", jobsData);
+        setJobs(jobsData);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     getJobs();
   }, []);
@@ -20,33 +29,35 @@ const FeaturedJobs = () => {
   return (
     <section className="bg-white-100 py-12 md:py-16 px-4 md:px-6 w-full">
       <div className="container mx-auto">
+        {/* Header - Always Visible */}
         <div className="flex justify-center text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
             Featured Jobs
           </h2>
         </div>
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{
-            delay: 0.2,
-            y: {
-              type: "spring",
-              stiffness: 60,
-            },
-            opacity: {
-              duration: 0.2,
-            },
-            ease: "easeIn",
-            duration: 1,
-          }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-2"
-        >
-          {jobs?.map((job, index) => (
-            <>
+
+        {/* Loader OR Job cards */}
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <Loader />
+          </div>
+        ) : (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{
+              delay: 0.2,
+              y: { type: "spring", stiffness: 60 },
+              opacity: { duration: 0.2 },
+              ease: "easeIn",
+              duration: 1,
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-2"
+          >
+            {jobs?.map((job, index) => (
               <Card
-                key={index}
+                key={job._id || index}
                 className="transition-transform transform hover:scale-105 rounded-lg overflow-hidden"
               >
                 <CardContent className="p-6">
@@ -67,7 +78,7 @@ const FeaturedJobs = () => {
                   <h3 className="text-2xl font-semibold text-gray-900 mb-2 capitalize">
                     {job.position}
                   </h3>
-                  <h3 className="text-md font-semibold text-gray-500 mb-2 capitalize ">
+                  <h3 className="text-md font-semibold text-gray-500 mb-2 capitalize">
                     {job.company}
                   </h3>
                   <p className="text-gray-600 mb-4">{job.workLocation}</p>
@@ -94,9 +105,11 @@ const FeaturedJobs = () => {
                   </Button>
                 </footer>
               </Card>
-            </>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* View More Button */}
         <div className="flex justify-center mt-8 mb-4">
           <Button
             component={Link}

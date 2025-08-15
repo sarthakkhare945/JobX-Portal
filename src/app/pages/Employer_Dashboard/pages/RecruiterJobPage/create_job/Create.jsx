@@ -15,8 +15,8 @@ const CreateJobForm = () => {
     // description: "",
     workMode: "onsite",
     salary: "",
-    experienceLevel: "Entry-Level",
-    workType: "Full-Time",
+    experienceLevel: "",
+    workType: "",
     skills: [],
     qualifications: [""],
     education: "Bachelors",
@@ -83,31 +83,61 @@ const CreateJobForm = () => {
   // Validate form inputs
   const validateForm = () => {
     const validationErrors = {};
-    const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/; // URL regex pattern
-    const salaryPattern = /^\d+(\-\d+)?$/; // Salary range regex pattern
+    const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
+    const salaryPattern = /^\d+(\-\d+)?$/;
 
     if (!newJob.company) validationErrors.company = "Company is required.";
     if (!newJob.position) validationErrors.position = "Position is required.";
     if (!newJob.location) validationErrors.location = "Location is required.";
+    if (!newJob.JobdescriptionSummary) validationErrors.JobdescriptionSummary = "Job Description is required"
+      if (!newJob.companyAbout) validationErrors.companyAbout = "Company details is required.";
+
     if (!newJob.jobUrl) {
       validationErrors.jobUrl = "Job URL is required.";
     } else if (!urlPattern.test(newJob.jobUrl)) {
       validationErrors.jobUrl = "Invalid URL format.";
     }
+
     if (!newJob.salary) {
       validationErrors.salary = "Salary range is required.";
     } else if (!salaryPattern.test(newJob.salary)) {
       validationErrors.salary =
         "Invalid salary range format (e.g., 50000-70000).";
     }
-    if (newJob.skills.length === 0)
-      validationErrors.skills = "At least one skill is required.";
-    if (newJob.qualifications.filter((q) => q).length === 0)
+
+    if (!newJob.workType) {
+  validationErrors.workType = "Work Type is required.";
+}
+
+
+
+    if (
+  !Array.isArray(newJob.skills) || // Make sure it's an array
+  newJob.skills.length === 0 || // Check if empty
+  newJob.skills.every(skill => !skill || skill.trim() === "") // Or all skills are empty strings
+) {
+  validationErrors.skills = "At least one skill is required.";
+}
+
+
+    if (
+      !newJob.qualifications ||
+      newJob.qualifications.filter((q) => q && q.trim() !== "").length === 0
+    ) {
       validationErrors.qualifications =
         "At least one qualification is required.";
+    }
 
     setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+
+    if (Object.keys(validationErrors).length > 0) {
+      enqueueSnackbar("Please fix the highlighted errors.", {
+        variant: "error",
+      });
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -191,7 +221,8 @@ const CreateJobForm = () => {
               onChange={(e) =>
                 setNewJob({ ...newJob, company: e.target.value })
               }
-              required
+              error={!!errors.company}
+              // required
               className={`w-full border ${
                 errors.company ? "border-red-500" : "border-gray-300"
               } p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
@@ -210,15 +241,23 @@ const CreateJobForm = () => {
               onChange={(e) =>
                 setNewJob({ ...newJob, position: e.target.value })
               }
-              className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className={`w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white ${
+                errors.position ? "border-red-500" : "border-gray-300"
+              }`}
             >
+              <option value="" disabled hidden>
+                Select the position
+              </option>
               {JobRoles.map((job, index) => (
                 <option key={index} value={job?.hiringPosition}>
-                  {capitalizeFirstLetter(job?.hiringPosition)}{" "}
-                  {/* Capitalize option text */}
+                  {capitalizeFirstLetter(job?.hiringPosition)}
                 </option>
               ))}
             </select>
+
+            {errors.position && (
+              <p className="text-red-500 text-sm mt-1">{errors.position}</p>
+            )}
           </div>
         </div>
 
@@ -233,7 +272,7 @@ const CreateJobForm = () => {
               onChange={(e) =>
                 setNewJob({ ...newJob, location: e.target.value })
               }
-              required
+                error={!!errors.company}
               className={`w-full border ${
                 errors.location ? "border-red-500" : "border-gray-300"
               } p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
@@ -261,35 +300,71 @@ const CreateJobForm = () => {
           </div>
         </div>
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">
-            Job Description
-          </label>
-          <textarea
-            value={newJob.JobdescriptionSummary}
-            onChange={(e) =>
-              setNewJob({ ...newJob, JobdescriptionSummary: e.target.value })
-            }
-            rows={4}
-            required
-            className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+     <div>
+  <label className="block text-gray-700 font-medium mb-1">
+    Job Description
+  </label>
+  <textarea
+    value={newJob.JobdescriptionSummary}
+    onChange={(e) => {
+      const value = e.target.value;
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">
-            Company About
-          </label>
-          <textarea
-            value={newJob.companyAbout}
-            onChange={(e) =>
-              setNewJob({ ...newJob, companyAbout: e.target.value })
-            }
-            rows={4}
-            required
-            className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      setNewJob({ ...newJob, JobdescriptionSummary: value });
+
+      // Clear the error as the user types
+      if (errors.JobdescriptionSummary) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          JobdescriptionSummary: null,
+        }));
+      }
+    }}
+    rows={4}
+    className={`w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+      errors.JobdescriptionSummary ? 'border-red-500' : 'border-gray-300'
+    }`}
+  />
+
+  {errors.JobdescriptionSummary && (
+    <p className="text-red-500 text-sm mt-1">
+      {errors.JobdescriptionSummary}
+    </p>
+  )}
+</div>
+
+
+       <div>
+  <label className="block text-gray-700 font-medium mb-1">
+    Company About
+  </label>
+  <textarea
+    value={newJob.companyAbout}
+    onChange={(e) => {
+      const value = e.target.value;
+      setNewJob({ ...newJob, companyAbout: value });
+
+      // Clear error on input
+      if (errors.companyAbout) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          companyAbout: null,
+        }));
+      }
+    }}
+    rows={4}
+    // required
+    className={`w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+      errors.companyAbout ? 'border-red-500' : 'border-gray-300'
+    }`}
+  />
+
+  {errors.companyAbout && (
+    <p className="text-red-500 text-sm mt-1">
+      {errors.companyAbout}
+    </p>
+  )}
+</div>
+
         <div>
           <label className="block text-gray-700 font-medium mb-1">
             Education
@@ -356,71 +431,102 @@ const CreateJobForm = () => {
               }
               className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              <option value="Entry-Level">Entry-Level</option>
-              <option value="Mid-Level">Mid-Level</option>
-              <option value="Senior-Level">Senior-Level</option>
-              <option value="Lead">Lead</option>
+              <option value="" disabled hidden>
+                Select Experience
+              </option>
+              <option value="Entry-Level">Entry-Level (0-2 years)</option>
+              <option value="Mid-Level">Mid-Level (3-5 years)</option>
+              <option value="Senior-Level">Senior-Level (6-10 years)</option>
+              <option value="Lead">Lead (10+ years)</option>
             </select>
           </div>
         </div>
 
         <div className="flex justify-between gap-4 mb-4">
-          <div className="flex-1">
-            <label className="block text-gray-700 font-medium mb-1">
-              Work Type
-            </label>
-            <select
-              value={newJob.workType}
-              onChange={(e) =>
-                setNewJob({ ...newJob, workType: e.target.value })
-              }
-              className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option>Select Work Type</option>
-              <option value="full-time">Full-Time</option>
-              <option value="part-time">Part-Time</option>
-              <option value="contract">Contract</option>
-              <option value="internship">Internship</option>
-            </select>
-          </div>
+         <div className="flex-1">
+  <label className="block text-gray-700 font-medium mb-1">
+    Work Type
+  </label>
+  <select
+    value={newJob.workType}
+    onChange={(e) => {
+      setNewJob({ ...newJob, workType: e.target.value });
 
-          <div className="flex-1">
-            <label className="block text-gray-700 font-medium mb-1">
-              Skills
-            </label>
-            <div className="flex items-center">
-              <input
-                type="text"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
-              />
-              <IconButton
-                onClick={handleAddSkill}
-                color="primary"
-                className="ml-2"
-              >
-                <AddIcon />
-              </IconButton>
-            </div>
+      // Clear error immediately on change
+      if (errors.workType) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          workType: null,
+        }));
+      }
+    }}
+    className={`w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white ${
+      errors.workType ? "border-red-500" : "border-gray-300"
+    }`}
+  >
+    <option value="" disabled hidden>
+      Select Work Type
+    </option>
+    <option value="full-time">Full-Time</option>
+    <option value="part-time">Part-Time</option>
+    <option value="contract">Contract</option>
+    <option value="internship">Internship</option>
+  </select>
 
-            {/* Displaying Selected Skills */}
-            <div className="flex flex-wrap mt-2">
-              {newJob.skills.map((skill, index) => (
-                <Chip
-                  key={index}
-                  label={skill}
-                  onDelete={() => handleRemoveSkill(skill)}
-                  className="mr-2 mb-2"
-                />
-              ))}
-            </div>
+  {errors.workType && (
+    <p className="text-red-500 text-sm mt-1">{errors.workType}</p>
+  )}
+</div>
 
-            {/* Error Message for Skills */}
-            {errors.skills && (
-              <p className="text-red-500 text-sm">{errors.skills}</p>
-            )}
-          </div>
+
+        <div className="flex-1">
+  <label className="block text-gray-700 font-medium mb-1">
+    Skills
+  </label>
+  <div className="flex items-center">
+    <input
+      type="text"
+      value={skillInput}
+      onChange={(e) => {
+        setSkillInput(e.target.value);
+
+        // Clear skills error as user types
+        if (errors.skills) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            skills: null,
+          }));
+        }
+      }}
+      className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+    />
+    <IconButton
+      onClick={handleAddSkill}
+      color="primary"
+      className="ml-2"
+    >
+      <AddIcon />
+    </IconButton>
+  </div>
+
+  {/* Displaying Selected Skills */}
+  <div className="flex flex-wrap mt-2">
+    {newJob.skills.map((skill, index) => (
+      <Chip
+        key={index}
+        label={skill}
+        onDelete={() => handleRemoveSkill(skill)}
+        className="mr-2 mb-2"
+      />
+    ))}
+  </div>
+
+  {/* Error Message for Skills */}
+  {errors.skills && (
+    <p className="text-red-500 text-sm">{errors.skills}</p>
+  )}
+</div>
+
         </div>
 
         <div>

@@ -69,7 +69,7 @@ const Navbar = () => {
         <Link to="/about" className="hover:underline">
           About
         </Link>
-        <Link to="/resume-score-checker" className="py-2 text-gray-700 hover:underline">
+        <Link to="/resume-score-checker" className="hover:underline">
            Resume Score Checker
           </Link>
         <Link to="#" className="hover:underline">
